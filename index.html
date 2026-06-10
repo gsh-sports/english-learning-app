@@ -857,6 +857,13 @@ function walleTalk(text){
   walleTimer=setTimeout(()=>walleSet("","聊得不错，继续吧 😊"), dur);
 }
 const AI_SYSTEM = "You are a warm, friendly English conversation tutor for a Chinese ABSOLUTE BEGINNER (A1 level). Rules: Reply ONLY in very simple English, short sentences (under 12 words). The student may ask or speak in Chinese — understand it and still answer in simple English. If they ask how to say something in English, teach them the English sentence. If their English has a mistake, add ONE short correction line starting with 💡. Always keep the conversation going: end with a simple question. After your English reply, add a Simplified Chinese translation in parentheses. Do not use tools. Be encouraging.";
+// 把今天的真实日期喂给模型（否则纯 API 不知道现在几号，会瞎猜）
+function aiSystem(){
+  const d=new Date();
+  const date=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  const wk=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][d.getDay()];
+  return AI_SYSTEM+" Today's real date is "+date+" ("+wk+"). If the student asks the date or day, use this real date.";
+}
 // 各家供应商（BYOK：用访客自己的密钥，浏览器直连）
 const PROVIDERS={
   claude:{name:"Claude", base:"", keyUrl:"https://console.anthropic.com/settings/keys"},
@@ -875,7 +882,7 @@ async function callAnthropic(history, pc){
   const r=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
     headers:{"content-type":"application/json","x-api-key":pc.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify({model:pc.model||"claude-haiku-4-5", max_tokens:600, system:AI_SYSTEM, messages:msgs})
+    body:JSON.stringify({model:pc.model||"claude-haiku-4-5", max_tokens:600, system:aiSystem(), messages:msgs})
   });
   if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error((e.error&&e.error.message)||("HTTP "+r.status)); }
   const d=await r.json();
@@ -883,7 +890,7 @@ async function callAnthropic(history, pc){
 }
 // 调用 DeepSeek / 千问 / 自定义（OpenAI 兼容格式）
 async function callOpenAI(history, base, pc){
-  const messages=[{role:"system",content:AI_SYSTEM}];
+  const messages=[{role:"system",content:aiSystem()}];
   for(const m of history){
     const role=m.role==="user"?"user":"assistant";
     if(messages.length===1 && role==="assistant") continue;
@@ -929,14 +936,14 @@ async function streamAnthropic(history, pc, onDelta){
   const r=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
     headers:{"content-type":"application/json","x-api-key":pc.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify({model:pc.model||"claude-haiku-4-5",max_tokens:600,stream:true,system:AI_SYSTEM,messages:msgs})
+    body:JSON.stringify({model:pc.model||"claude-haiku-4-5",max_tokens:600,stream:true,system:aiSystem(),messages:msgs})
   });
   if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error((e.error&&e.error.message)||("HTTP "+r.status)); }
   await readSSE(r,o=>{ if(o.type==="content_block_delta"&&o.delta&&o.delta.type==="text_delta") onDelta(o.delta.text); });
 }
 // 流式：DeepSeek / 千问 / 自定义（OpenAI 兼容）
 async function streamOpenAI(history, base, pc, onDelta){
-  const messages=[{role:"system",content:AI_SYSTEM}];
+  const messages=[{role:"system",content:aiSystem()}];
   for(const m of history){ const role=m.role==="user"?"user":"assistant"; if(messages.length===1&&role==="assistant")continue; messages.push({role,content:m.text}); }
   const r=await fetch(base.replace(/\/+$/,"")+"/chat/completions",{
     method:"POST",

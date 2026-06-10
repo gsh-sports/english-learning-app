@@ -12,7 +12,7 @@
   #   export DEEPSEEK_API_KEY=sk-xxx
   #   export DASHSCOPE_API_KEY=sk-xxx
 """
-import json, os, subprocess, tempfile, urllib.request, urllib.error
+import json, os, subprocess, tempfile, urllib.request, urllib.error, datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 DIR = os.path.dirname(os.path.abspath(__file__))
@@ -34,8 +34,12 @@ PROVIDERS = {
     "qwen":     {"base": "https://dashscope.aliyuncs.com/compatible-mode/v1", "env": "DASHSCOPE_API_KEY", "model": "qwen-turbo"},
 }
 
+def system_with_date():
+    d = datetime.date.today()
+    return SYSTEM + f"\nToday's real date is {d.isoformat()} ({d.strftime('%A')}). If the student asks the date or day, use this real date."
+
 def build_messages(history):
-    msgs = [{"role": "system", "content": SYSTEM}]
+    msgs = [{"role": "system", "content": system_with_date()}]
     for m in history[-12:]:
         role = "user" if m.get("role") == "user" else "assistant"
         if len(msgs) == 1 and role == "assistant":  # 首条业务消息不能是 assistant
@@ -47,7 +51,7 @@ def build_messages(history):
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "claude-haiku-4-5")
 
 def ask_claude(history):
-    lines = [SYSTEM, "", "Conversation so far:"]
+    lines = [system_with_date(), "", "Conversation so far:"]
     for m in history[-12:]:
         who = "Student" if m.get("role") == "user" else "Tutor"
         lines.append(f"{who}: {m.get('text','')}")
