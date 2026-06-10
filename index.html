@@ -951,8 +951,8 @@ async function sendAi(){
     let reply;
     if(pc.key){                                  // 有自己的密钥 → 浏览器直连（在线可用）
       reply=await callAI(aiHistory);
-    }else{                                       // 否则回退到本地 server.py
-      const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:aiHistory})});
+    }else{                                       // 否则回退到本地 server.py（claude/deepseek/qwen）
+      const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:aiHistory, provider:prov, model:pc.model})});
       if(!r.ok) throw new Error("no-backend");
       reply=(await r.json()).reply;
     }

@@ -65,6 +65,17 @@ python3 server.py          # 启动本地后端（默认 8000 端口）
 - 要用 AI 陪练：需安装并登录 Claude Code（命令 `claude` 可用），用上面的 `server.py`。
 - 手机访问：手机与电脑同一 WiFi，访问 `http://<电脑局域网IP>:8000`（麦克风语音输入受浏览器安全限制，仅 https/localhost 可用）。
 
+`server.py` 还能**用环境变量里的密钥代理 DeepSeek / 通义千问**（服务端调用，浏览器里不用填 key）：
+
+```bash
+export DEEPSEEK_API_KEY=sk-xxx      # 想用 DeepSeek
+export DASHSCOPE_API_KEY=sk-xxx     # 想用 通义千问
+python3 server.py
+# 然后在 App 的"设置"里选 DeepSeek / 通义千问，密钥留空即可（走本地代理）
+```
+
+> 三种 AI 后端并存：在"设置"里填了某家的 key → 浏览器直连那家；key 留空 → 回退到 `server.py`（claude 用本地 Claude Code；deepseek/qwen 用上面的环境变量密钥）。
+
 ## 🛠 重新构建数据（可选）
 
 仓库已包含构建好的数据（`words.js` / `examples.js` / `grammar.js`），开箱即用。若要从头重建：
