@@ -1,0 +1,602 @@
+{
+ "the": [
+  {
+   "en": "The book is on the table.",
+   "cn": "这本书在桌子上。"
+  },
+  {
+   "en": "Open the door, please.",
+   "cn": "请把门打开。"
+  }
+ ],
+ "be": [
+  {
+   "en": "I want to be a teacher.",
+   "cn": "我想成为一名老师。"
+  },
+  {
+   "en": "Will you be at home tonight?",
+   "cn": "你今晚会在家吗？"
+  }
+ ],
+ "and": [
+  {
+   "en": "I like tea and coffee.",
+   "cn": "我喜欢茶和咖啡。"
+  },
+  {
+   "en": "He is tall and strong.",
+   "cn": "他又高又壮。"
+  }
+ ],
+ "of": [
+  {
+   "en": "This is a cup of tea.",
+   "cn": "这是一杯茶。"
+  },
+  {
+   "en": "He is a friend of mine.",
+   "cn": "他是我的一个朋友。"
+  }
+ ],
+ "a": [
+  {
+   "en": "I have a dog.",
+   "cn": "我有一只狗。"
+  },
+  {
+   "en": "She is a nurse.",
+   "cn": "她是一名护士。"
+  }
+ ],
+ "in": [
+  {
+   "en": "The cat is in the box.",
+   "cn": "猫在箱子里。"
+  },
+  {
+   "en": "We live in China.",
+   "cn": "我们住在中国。"
+  }
+ ],
+ "to": [
+  {
+   "en": "I go to school every day.",
+   "cn": "我每天去上学。"
+  },
+  {
+   "en": "Give the book to me.",
+   "cn": "把书给我。"
+  }
+ ],
+ "have": [
+  {
+   "en": "I have two brothers.",
+   "cn": "我有两个兄弟。"
+  },
+  {
+   "en": "Do you have any water?",
+   "cn": "你有水吗？"
+  }
+ ],
+ "it": [
+  {
+   "en": "It is a nice day.",
+   "cn": "今天天气很好。"
+  },
+  {
+   "en": "I like it very much.",
+   "cn": "我非常喜欢它。"
+  }
+ ],
+ "I": [
+  {
+   "en": "I am a student.",
+   "cn": "我是一名学生。"
+  },
+  {
+   "en": "I love my family.",
+   "cn": "我爱我的家人。"
+  }
+ ],
+ "that": [
+  {
+   "en": "That is my car.",
+   "cn": "那是我的车。"
+  },
+  {
+   "en": "I know that he is busy.",
+   "cn": "我知道他很忙。"
+  }
+ ],
+ "for": [
+  {
+   "en": "This gift is for you.",
+   "cn": "这个礼物是给你的。"
+  },
+  {
+   "en": "I waited for an hour.",
+   "cn": "我等了一个小时。"
+  }
+ ],
+ "you": [
+  {
+   "en": "You are my best friend.",
+   "cn": "你是我最好的朋友。"
+  },
+  {
+   "en": "Can you help me?",
+   "cn": "你能帮我吗？"
+  }
+ ],
+ "he": [
+  {
+   "en": "He is my father.",
+   "cn": "他是我的父亲。"
+  },
+  {
+   "en": "He works in a bank.",
+   "cn": "他在一家银行工作。"
+  }
+ ],
+ "with": [
+  {
+   "en": "Come with me.",
+   "cn": "跟我来。"
+  },
+  {
+   "en": "I cut it with a knife.",
+   "cn": "我用刀把它切开。"
+  }
+ ],
+ "on": [
+  {
+   "en": "The keys are on the desk.",
+   "cn": "钥匙在桌子上。"
+  },
+  {
+   "en": "We met on Monday.",
+   "cn": "我们星期一见的面。"
+  }
+ ],
+ "do": [
+  {
+   "en": "What do you do?",
+   "cn": "你是做什么的？"
+  },
+  {
+   "en": "I do my homework at night.",
+   "cn": "我晚上做作业。"
+  }
+ ],
+ "say": [
+  {
+   "en": "What did you say?",
+   "cn": "你说什么？"
+  },
+  {
+   "en": "Say it again, please.",
+   "cn": "请再说一遍。"
+  }
+ ],
+ "this": [
+  {
+   "en": "This is my phone.",
+   "cn": "这是我的手机。"
+  },
+  {
+   "en": "I like this song.",
+   "cn": "我喜欢这首歌。"
+  }
+ ],
+ "they": [
+  {
+   "en": "They are my friends.",
+   "cn": "他们是我的朋友。"
+  },
+  {
+   "en": "They live next door.",
+   "cn": "他们住在隔壁。"
+  }
+ ],
+ "at": [
+  {
+   "en": "I am at home.",
+   "cn": "我在家。"
+  },
+  {
+   "en": "We meet at noon.",
+   "cn": "我们中午见面。"
+  }
+ ],
+ "but": [
+  {
+   "en": "I am tired but happy.",
+   "cn": "我很累，但很开心。"
+  },
+  {
+   "en": "She is small but strong.",
+   "cn": "她个子小，但很强壮。"
+  }
+ ],
+ "we": [
+  {
+   "en": "We are a team.",
+   "cn": "我们是一个团队。"
+  },
+  {
+   "en": "We like to travel.",
+   "cn": "我们喜欢旅行。"
+  }
+ ],
+ "his": [
+  {
+   "en": "This is his bag.",
+   "cn": "这是他的包。"
+  },
+  {
+   "en": "His name is Tom.",
+   "cn": "他的名字叫汤姆。"
+  }
+ ],
+ "from": [
+  {
+   "en": "I am from China.",
+   "cn": "我来自中国。"
+  },
+  {
+   "en": "This letter is from my mother.",
+   "cn": "这封信是我母亲寄来的。"
+  }
+ ],
+ "not": [
+  {
+   "en": "I am not tired.",
+   "cn": "我不累。"
+  },
+  {
+   "en": "She does not like coffee.",
+   "cn": "她不喜欢咖啡。"
+  }
+ ],
+ "by": [
+  {
+   "en": "I go to work by bus.",
+   "cn": "我坐公交车去上班。"
+  },
+  {
+   "en": "The book was written by him.",
+   "cn": "这本书是他写的。"
+  }
+ ],
+ "she": [
+  {
+   "en": "She is my sister.",
+   "cn": "她是我的姐姐。"
+  },
+  {
+   "en": "She likes to read.",
+   "cn": "她喜欢读书。"
+  }
+ ],
+ "or": [
+  {
+   "en": "Tea or coffee?",
+   "cn": "茶还是咖啡？"
+  },
+  {
+   "en": "We can walk or take a taxi.",
+   "cn": "我们可以走路或者打车。"
+  }
+ ],
+ "as": [
+  {
+   "en": "She works as a doctor.",
+   "cn": "她做医生工作。"
+  },
+  {
+   "en": "He is as tall as me.",
+   "cn": "他和我一样高。"
+  }
+ ],
+ "what": [
+  {
+   "en": "What is your name?",
+   "cn": "你叫什么名字？"
+  },
+  {
+   "en": "What time is it?",
+   "cn": "几点了？"
+  }
+ ],
+ "go": [
+  {
+   "en": "Let's go home.",
+   "cn": "我们回家吧。"
+  },
+  {
+   "en": "I go to bed early.",
+   "cn": "我很早睡觉。"
+  }
+ ],
+ "their": [
+  {
+   "en": "This is their house.",
+   "cn": "这是他们的房子。"
+  },
+  {
+   "en": "The children love their teacher.",
+   "cn": "孩子们爱他们的老师。"
+  }
+ ],
+ "can": [
+  {
+   "en": "I can swim.",
+   "cn": "我会游泳。"
+  },
+  {
+   "en": "Can you speak English?",
+   "cn": "你会说英语吗？"
+  }
+ ],
+ "who": [
+  {
+   "en": "Who is that man?",
+   "cn": "那个男人是谁？"
+  },
+  {
+   "en": "Who wants tea?",
+   "cn": "谁想喝茶？"
+  }
+ ],
+ "get": [
+  {
+   "en": "I get up at seven.",
+   "cn": "我七点起床。"
+  },
+  {
+   "en": "Where can I get a ticket?",
+   "cn": "我在哪里能买到票？"
+  }
+ ],
+ "if": [
+  {
+   "en": "Call me if you are free.",
+   "cn": "你有空就给我打电话。"
+  },
+  {
+   "en": "If it rains, we stay home.",
+   "cn": "如果下雨，我们就待在家里。"
+  }
+ ],
+ "would": [
+  {
+   "en": "I would like some water.",
+   "cn": "我想要一些水。"
+  },
+  {
+   "en": "Would you like to come?",
+   "cn": "你想来吗？"
+  }
+ ],
+ "her": [
+  {
+   "en": "This is her book.",
+   "cn": "这是她的书。"
+  },
+  {
+   "en": "I like her very much.",
+   "cn": "我非常喜欢她。"
+  }
+ ],
+ "all": [
+  {
+   "en": "All the students are here.",
+   "cn": "所有的学生都到了。"
+  },
+  {
+   "en": "I ate it all.",
+   "cn": "我把它全吃了。"
+  }
+ ],
+ "my": [
+  {
+   "en": "This is my room.",
+   "cn": "这是我的房间。"
+  },
+  {
+   "en": "My phone is new.",
+   "cn": "我的手机是新的。"
+  }
+ ],
+ "make": [
+  {
+   "en": "I make tea every morning.",
+   "cn": "我每天早上泡茶。"
+  },
+  {
+   "en": "Let's make a cake.",
+   "cn": "我们来做个蛋糕吧。"
+  }
+ ],
+ "about": [
+  {
+   "en": "This book is about animals.",
+   "cn": "这本书是关于动物的。"
+  },
+  {
+   "en": "Tell me about your day.",
+   "cn": "跟我说说你的一天。"
+  }
+ ],
+ "know": [
+  {
+   "en": "I know the answer.",
+   "cn": "我知道答案。"
+  },
+  {
+   "en": "Do you know him?",
+   "cn": "你认识他吗？"
+  }
+ ],
+ "will": [
+  {
+   "en": "I will call you later.",
+   "cn": "我待会儿给你打电话。"
+  },
+  {
+   "en": "It will rain tomorrow.",
+   "cn": "明天会下雨。"
+  }
+ ],
+ "up": [
+  {
+   "en": "Stand up, please.",
+   "cn": "请站起来。"
+  },
+  {
+   "en": "Look up at the sky.",
+   "cn": "抬头看天空。"
+  }
+ ],
+ "one": [
+  {
+   "en": "I have one sister.",
+   "cn": "我有一个姐姐。"
+  },
+  {
+   "en": "Give me one, please.",
+   "cn": "请给我一个。"
+  }
+ ],
+ "time": [
+  {
+   "en": "What time is it?",
+   "cn": "几点了？"
+  },
+  {
+   "en": "I have no time today.",
+   "cn": "我今天没有时间。"
+  }
+ ],
+ "there": [
+  {
+   "en": "There is a book on the desk.",
+   "cn": "桌子上有一本书。"
+  },
+  {
+   "en": "Look over there!",
+   "cn": "看那边！"
+  }
+ ],
+ "year": [
+  {
+   "en": "I am ten years old.",
+   "cn": "我十岁了。"
+  },
+  {
+   "en": "See you next year.",
+   "cn": "明年见。"
+  }
+ ],
+ "so": [
+  {
+   "en": "I am so happy.",
+   "cn": "我太开心了。"
+  },
+  {
+   "en": "It was so cold today.",
+   "cn": "今天太冷了。"
+  }
+ ],
+ "think": [
+  {
+   "en": "I think you are right.",
+   "cn": "我觉得你是对的。"
+  },
+  {
+   "en": "Let me think about it.",
+   "cn": "让我想一想。"
+  }
+ ],
+ "when": [
+  {
+   "en": "When do you get up?",
+   "cn": "你什么时候起床？"
+  },
+  {
+   "en": "Call me when you arrive.",
+   "cn": "你到了给我打电话。"
+  }
+ ],
+ "which": [
+  {
+   "en": "Which one do you want?",
+   "cn": "你想要哪一个？"
+  },
+  {
+   "en": "Which is your bag?",
+   "cn": "哪个是你的包？"
+  }
+ ],
+ "them": [
+  {
+   "en": "I like them.",
+   "cn": "我喜欢他们。"
+  },
+  {
+   "en": "Give the books to them.",
+   "cn": "把书给他们。"
+  }
+ ],
+ "some": [
+  {
+   "en": "I want some water.",
+   "cn": "我想要一些水。"
+  },
+  {
+   "en": "Buy some apples, please.",
+   "cn": "请买一些苹果。"
+  }
+ ],
+ "me": [
+  {
+   "en": "Give it to me.",
+   "cn": "把它给我。"
+  },
+  {
+   "en": "He helped me.",
+   "cn": "他帮了我。"
+  }
+ ],
+ "people": [
+  {
+   "en": "Many people like music.",
+   "cn": "很多人喜欢音乐。"
+  },
+  {
+   "en": "The people here are kind.",
+   "cn": "这里的人很友善。"
+  }
+ ],
+ "take": [
+  {
+   "en": "Take an umbrella.",
+   "cn": "带上一把伞。"
+  },
+  {
+   "en": "I take the bus to work.",
+   "cn": "我坐公交车去上班。"
+  }
+ ],
+ "out": [
+  {
+   "en": "Let's go out.",
+   "cn": "我们出去吧。"
+  },
+  {
+   "en": "Take out the trash.",
+   "cn": "把垃圾拿出去。"
+  }
+ ]
+}
