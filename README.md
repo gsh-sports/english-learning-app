@@ -24,6 +24,32 @@
 
 👉 **在线地址：** https://gsh-sports.github.io/english-learning-app/
 
+### 🔑 AI 陪练支持的大模型（BYOK · 用谁的 key 花谁的额度）
+
+在 **设置 → AI 陪练** 里选供应商、填你自己的 key。密钥只存在你本机浏览器，浏览器直连模型接口，不经过任何服务器。
+
+**内置（选好直接填 key + 模型名）：**
+
+| 供应商 | 模型名示例 | 获取 key |
+|--------|-----------|----------|
+| Claude (Anthropic) | `claude-haiku-4-5`、`claude-sonnet-4-6` | <https://console.anthropic.com/settings/keys> |
+| DeepSeek (深度求索) | `deepseek-chat`、`deepseek-reasoner` | <https://platform.deepseek.com/api_keys> |
+| 通义千问 (阿里) | `qwen-turbo`、`qwen-plus`、`qwen-max` | <https://dashscope.console.aliyun.com/apiKey> |
+
+**自定义（任何 OpenAI 兼容接口都行，选"自定义"填接口地址）：**
+
+| 服务 | 接口地址（base url） | 模型名示例 |
+|------|---------------------|-----------|
+| 硅基流动 SiliconFlow | `https://api.siliconflow.cn/v1` | `deepseek-ai/DeepSeek-V3` |
+| Kimi (月之暗面) | `https://api.moonshot.cn/v1` | `moonshot-v1-8k` |
+| 智谱 GLM | `https://open.bigmodel.cn/api/paas/v4` | `glm-4-flash` |
+| OpenAI | `https://api.openai.com/v1` | `gpt-4o-mini` |
+| Gemini (OpenAI 兼容) | `https://generativelanguage.googleapis.com/v1beta/openai` | `gemini-2.0-flash` |
+| 本地 Ollama | `http://localhost:11434/v1` | `qwen2.5` |
+
+> 💡 国内用户推荐 **DeepSeek / 通义千问 / 硅基流动**：访问快、便宜、无需翻墙。
+> ⚠️ 要点：① 模型名要填对；② 在线版需供应商支持浏览器跨域（上面列出的均已实测支持）；③ 本地 Ollama 仅在本机访问时可用。
+
 ## 💻 本地完整运行（含 AI 陪练）
 
 AI 陪练通过本地 [Claude Code](https://claude.com/claude-code) 的无头模式（`claude -p`）实现——**无需 API 密钥**，用你本机已登录的 Claude。
