@@ -145,6 +145,7 @@
   .seg .segbtn{border:none;background:none;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--sub);cursor:pointer}
   .seg .segbtn.on{background:#fff;color:var(--primary);box-shadow:0 1px 4px rgba(0,0,0,.1)}
   .vsel{max-width:150px;border:1px solid var(--line);border-radius:10px;padding:8px;font-size:13px;background:#fff}
+  .kinput{width:100%;margin-top:8px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;outline:none;background:#fff}
   .trybtn{border:none;background:#eef0fc;color:var(--primary);width:34px;height:34px;border-radius:10px;font-size:15px;cursor:pointer}
   .menucard{background:var(--card);border-radius:16px;box-shadow:0 2px 10px rgba(40,40,80,.05);margin-bottom:16px;overflow:hidden}
   .menucard .mi{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);cursor:pointer;font-size:15px}
@@ -457,15 +458,16 @@
         </div>
       </div>
       <div class="row" style="display:block">
-        <span>AI 陪练密钥（在线版）<br><small style="color:var(--sub);font-weight:400">填你自己的 Claude API Key，仅存在本机浏览器，用谁的key花谁的额度。<a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--primary)">获取密钥</a></small></span>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <input id="apiKeyInput" type="password" placeholder="sk-ant-..." style="flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;outline:none">
-          <select id="aiModelSel" class="vsel">
-            <option value="claude-haiku-4-5">Haiku·便宜</option>
-            <option value="claude-sonnet-4-6">Sonnet</option>
-            <option value="claude-opus-4-8">Opus·最强</option>
-          </select>
-        </div>
+        <span>AI 陪练（在线版 · 填你自己的密钥）<br><small style="color:var(--sub);font-weight:400">各家用各家的 key，仅存本机浏览器，用谁的key花谁的额度。<a id="getKeyLink" href="#" target="_blank" style="color:var(--primary)">获取密钥</a></small></span>
+        <select id="aiProviderSel" class="kinput">
+          <option value="claude">Claude (Anthropic)</option>
+          <option value="deepseek">DeepSeek (深度求索)</option>
+          <option value="qwen">通义千问 (阿里)</option>
+          <option value="custom">自定义 (OpenAI 兼容)</option>
+        </select>
+        <input id="customBaseInput" class="kinput" placeholder="接口地址 https://.../v1" style="display:none">
+        <input id="apiKeyInput" class="kinput" type="password" placeholder="API Key">
+        <input id="aiModelInput" class="kinput" placeholder="模型名，如 deepseek-chat">
       </div>
       <div class="row">
         <span>每日学习提醒<br><small style="color:var(--sub);font-weight:400">网页版仅在打开时提醒，装成桌面图标更稳</small></span>
@@ -498,6 +500,17 @@ let lessons = load(LS_LESSON, {});               // {lessonId: 最好成绩 0-10
 function load(k,def){ try{return JSON.parse(localStorage.getItem(k)) ?? def;}catch(e){return def;} }
 function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 function saveAll(){ save(LS_PROG,progress); save(LS_SET,settings); save(LS_STREAK,streak); save(LS_LOG,dayLog); }
+// 多模型供应商配置（兼容老版本的 apiKey/aiModel）
+if(!settings.providers){
+  settings.providers={
+    claude:{key:settings.apiKey||"", model:settings.aiModel||"claude-haiku-4-5"},
+    deepseek:{key:"", model:"deepseek-chat"},
+    qwen:{key:"", model:"qwen-turbo"},
+    custom:{key:"", model:"", base:"https://"}
+  };
+  if(!settings.aiProvider) settings.aiProvider="claude";
+  save(LS_SET,settings);
+}
 function logCard(){ const t=today(); dayLog[t]=(dayLog[t]||0)+1; save(LS_LOG,dayLog); }
 
 /* ===================== 打卡 ===================== */
@@ -844,8 +857,15 @@ function walleTalk(text){
   walleTimer=setTimeout(()=>walleSet("","聊得不错，继续吧 😊"), dur);
 }
 const AI_SYSTEM = "You are a warm, friendly English conversation tutor for a Chinese ABSOLUTE BEGINNER (A1 level). Rules: Reply ONLY in very simple English, short sentences (under 12 words). If the student's English has a mistake, add ONE short correction line starting with 💡. Always keep the conversation going: end with a simple question. After your English reply, add a Simplified Chinese translation in parentheses. Do not use tools. Be encouraging.";
-// 直接调用 Anthropic API（BYOK：用访客自己的密钥，浏览器直连）
-async function callAnthropic(history){
+// 各家供应商（BYOK：用访客自己的密钥，浏览器直连）
+const PROVIDERS={
+  claude:{name:"Claude", base:"", keyUrl:"https://console.anthropic.com/settings/keys"},
+  deepseek:{name:"DeepSeek", base:"https://api.deepseek.com", keyUrl:"https://platform.deepseek.com/api_keys"},
+  qwen:{name:"通义千问", base:"https://dashscope.aliyuncs.com/compatible-mode/v1", keyUrl:"https://dashscope.console.aliyun.com/apiKey"},
+  custom:{name:"自定义", base:"", keyUrl:""}
+};
+// 调用 Claude（Anthropic 格式，浏览器直连）
+async function callAnthropic(history, pc){
   const msgs=[];
   for(const m of history){                  // 首条不能是 assistant，过滤开头的问候
     const role=m.role==="user"?"user":"assistant";
@@ -854,22 +874,36 @@ async function callAnthropic(history){
   }
   const r=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
-    headers:{
-      "content-type":"application/json",
-      "x-api-key":settings.apiKey,
-      "anthropic-version":"2023-06-01",
-      "anthropic-dangerous-direct-browser-access":"true"
-    },
-    body:JSON.stringify({
-      model:settings.aiModel||"claude-haiku-4-5",
-      max_tokens:600,
-      system:AI_SYSTEM,
-      messages:msgs
-    })
+    headers:{"content-type":"application/json","x-api-key":pc.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:pc.model||"claude-haiku-4-5", max_tokens:600, system:AI_SYSTEM, messages:msgs})
   });
   if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error((e.error&&e.error.message)||("HTTP "+r.status)); }
   const d=await r.json();
   return (d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim();
+}
+// 调用 DeepSeek / 千问 / 自定义（OpenAI 兼容格式）
+async function callOpenAI(history, base, pc){
+  const messages=[{role:"system",content:AI_SYSTEM}];
+  for(const m of history){
+    const role=m.role==="user"?"user":"assistant";
+    if(messages.length===1 && role==="assistant") continue;
+    messages.push({role, content:m.text});
+  }
+  const r=await fetch(base.replace(/\/+$/,"")+"/chat/completions",{
+    method:"POST",
+    headers:{"content-type":"application/json","authorization":"Bearer "+pc.key},
+    body:JSON.stringify({model:pc.model, max_tokens:600, messages})
+  });
+  if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error((e.error&&e.error.message)||("HTTP "+r.status)); }
+  const d=await r.json();
+  return ((d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||"").trim();
+}
+async function callAI(history){
+  const prov=settings.aiProvider||"claude";
+  const pc=(settings.providers&&settings.providers[prov])||{};
+  if(prov==="claude") return callAnthropic(history, pc);
+  const base = prov==="custom" ? pc.base : PROVIDERS[prov].base;
+  return callOpenAI(history, base, pc);
 }
 function speakable(t){
   let s=t.split("💡")[0];                               // 去掉纠错及之后
@@ -911,10 +945,12 @@ async function sendAi(){
   walleSet("thinking","思考中… 🤔");
   const typing=document.createElement("div"); typing.className="amsg ai typing"; typing.textContent="对方正在输入…";
   aiMsgs.appendChild(typing); aiMsgs.scrollTop=aiMsgs.scrollHeight;
+  const prov=settings.aiProvider||"claude";
+  const pc=(settings.providers&&settings.providers[prov])||{};
   try{
     let reply;
-    if(settings.apiKey){                       // 有自己的密钥 → 浏览器直连（在线可用）
-      reply=await callAnthropic(aiHistory);
+    if(pc.key){                                  // 有自己的密钥 → 浏览器直连（在线可用）
+      reply=await callAI(aiHistory);
     }else{                                       // 否则回退到本地 server.py
       const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:aiHistory})});
       if(!r.ok) throw new Error("no-backend");
@@ -925,9 +961,9 @@ async function sendAi(){
     walleTalk(reply);
   }catch(e){
     typing.remove();
-    const hint = settings.apiKey
-      ? ("出错了："+(e.message||e)+"（检查密钥是否正确/有额度）")
-      : "在线使用请到 设置 → 填入你自己的 Claude API 密钥；或在本机运行 server.py。";
+    const hint = pc.key
+      ? ("出错了："+(e.message||e)+"（检查密钥/额度/模型名是否正确）")
+      : "在线使用请到 设置 选择模型并填入你自己的密钥（Claude/DeepSeek/千问都行）；或在本机运行 server.py。";
     addAiMsg("ai", hint, false);
     walleSet("","出错了 😢");
   }
@@ -991,13 +1027,23 @@ aiMic.onclick=aiMicToggle;
 aiMsgs.onclick=e=>{ const b=e.target.closest("[data-spk]"); if(b) speak(decodeURIComponent(b.dataset.spk)); };
 
 // 设置
-openSettings.onclick=()=>{
-  apiKeyInput.value=settings.apiKey||"";
-  aiModelSel.value=settings.aiModel||"claude-haiku-4-5";
-  sheet.classList.add("active");
-};
-apiKeyInput.oninput=()=>{ settings.apiKey=apiKeyInput.value.trim(); saveAll(); };
-aiModelSel.onchange=()=>{ settings.aiModel=aiModelSel.value; saveAll(); };
+function loadProviderUI(){
+  const prov=settings.aiProvider||"claude";
+  const pc=settings.providers[prov]||{};
+  aiProviderSel.value=prov;
+  apiKeyInput.value=pc.key||"";
+  aiModelInput.value=pc.model||"";
+  customBaseInput.style.display = prov==="custom" ? "block" : "none";
+  customBaseInput.value=pc.base||"";
+  const url=PROVIDERS[prov].keyUrl;
+  getKeyLink.style.display = url ? "inline" : "none";
+  getKeyLink.href = url || "#";
+}
+openSettings.onclick=()=>{ loadProviderUI(); sheet.classList.add("active"); };
+aiProviderSel.onchange=()=>{ settings.aiProvider=aiProviderSel.value; saveAll(); loadProviderUI(); };
+apiKeyInput.oninput=()=>{ settings.providers[settings.aiProvider].key=apiKeyInput.value.trim(); saveAll(); };
+aiModelInput.oninput=()=>{ settings.providers[settings.aiProvider].model=aiModelInput.value.trim(); saveAll(); };
+customBaseInput.oninput=()=>{ settings.providers.custom.base=customBaseInput.value.trim(); saveAll(); };
 closeSheet.onclick=()=>{ sheet.classList.remove("active"); refreshHome(); };
 sheet.onclick=e=>{ if(e.target===sheet) sheet.classList.remove("active"); };
 plus.onclick=()=>{ settings.perDay=Math.min(50,settings.perDay+5); saveAll(); perDay.textContent=settings.perDay; };
