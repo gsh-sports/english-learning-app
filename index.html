@@ -209,6 +209,7 @@
   .amsgspk:active{transform:scale(.95)}
   .aiinput{display:flex;gap:7px;align-items:center;width:100%;padding:10px 0 4px;background:transparent}
   .aiinput input{flex:1 1 0;min-width:0;border:1px solid var(--line);border-radius:20px;padding:11px 14px;font-size:15px;outline:none;background:#fff}
+  .ailang{width:38px;height:40px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;flex:0 0 auto}
   .aimic{width:40px;height:40px;border:none;border-radius:50%;background:#eef0fc;color:var(--primary);font-size:17px;cursor:pointer;flex:0 0 auto}
   .aimic.listening{background:var(--red);color:#fff;animation:pulse 1s infinite}
   @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
@@ -349,8 +350,9 @@
     </div>
     <div id="aiMsgs" class="aimsgs"></div>
     <div class="aiinput">
+      <button id="aiLang" class="ailang" title="切换语音识别语言">EN</button>
       <button id="aiMic" class="aimic" aria-label="语音输入">🎤</button>
-      <input id="aiText" placeholder="用英语打字，或点麦克风…">
+      <input id="aiText" placeholder="打字或点麦克风（中/英都行）…">
       <button id="aiSend" class="aisend">发送</button>
     </div>
   </section>
@@ -844,7 +846,7 @@ function finishQuiz(){
 
 /* ===================== AI 英语陪练 ===================== */
 const AI_SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let aiHistory=[], aiRecog=null, aiBusy=false, walleTimer=null;
+let aiHistory=[], aiRecog=null, aiBusy=false, walleTimer=null, aiMicLang="en-US";
 function walleSet(state,status){
   const w=document.getElementById("walle");
   if(w) w.className="walle "+(state||"");
@@ -856,7 +858,7 @@ function walleTalk(text){
   const dur=Math.max(1500, speakable(text).length*70);
   walleTimer=setTimeout(()=>walleSet("","聊得不错，继续吧 😊"), dur);
 }
-const AI_SYSTEM = "You are a warm, friendly English conversation tutor for a Chinese ABSOLUTE BEGINNER (A1 level). Rules: Reply ONLY in very simple English, short sentences (under 12 words). If the student's English has a mistake, add ONE short correction line starting with 💡. Always keep the conversation going: end with a simple question. After your English reply, add a Simplified Chinese translation in parentheses. Do not use tools. Be encouraging.";
+const AI_SYSTEM = "You are a warm, friendly English conversation tutor for a Chinese ABSOLUTE BEGINNER (A1 level). Rules: Reply ONLY in very simple English, short sentences (under 12 words). The student may ask or speak in Chinese — understand it and still answer in simple English. If they ask how to say something in English, teach them the English sentence. If their English has a mistake, add ONE short correction line starting with 💡. Always keep the conversation going: end with a simple question. After your English reply, add a Simplified Chinese translation in parentheses. Do not use tools. Be encouraging.";
 // 各家供应商（BYOK：用访客自己的密钥，浏览器直连）
 const PROVIDERS={
   claude:{name:"Claude", base:"", keyUrl:"https://console.anthropic.com/settings/keys"},
@@ -972,8 +974,8 @@ async function sendAi(){
 function aiMicToggle(){
   if(!AI_SR){ alert("此浏览器不支持语音输入。请打字；语音输入需 Chrome/Safari 且用电脑(localhost)或 https。"); return; }
   if(aiMic.classList.contains("listening")){ try{aiRecog.stop();}catch(e){} return; }
-  aiRecog=new AI_SR(); aiRecog.lang="en-US"; aiRecog.interimResults=false; aiRecog.maxAlternatives=1;
-  aiMic.classList.add("listening"); walleSet("listening","我在听你说… 🎧");
+  aiRecog=new AI_SR(); aiRecog.lang=aiMicLang; aiRecog.interimResults=false; aiRecog.maxAlternatives=1;
+  aiMic.classList.add("listening"); walleSet("listening", aiMicLang==="zh-CN" ? "我在听你说中文… 🎧" : "我在听你说英语… 🎧");
   aiRecog.onresult=e=>{ aiText.value=e.results[0][0].transcript; };
   aiRecog.onend=()=>{ aiMic.classList.remove("listening"); if(aiText.value.trim()) sendAi(); else walleSet("","按住麦克风说说看 🎤"); };
   aiRecog.onerror=()=>{ aiMic.classList.remove("listening"); walleSet("","没听清，再试一次"); };
@@ -1024,6 +1026,7 @@ aiBack.onclick=()=>showTab("usage");
 aiSend.onclick=sendAi;
 aiText.addEventListener("keydown",e=>{ if(e.key==="Enter") sendAi(); });
 aiMic.onclick=aiMicToggle;
+aiLang.onclick=()=>{ aiMicLang = aiMicLang==="en-US" ? "zh-CN" : "en-US"; aiLang.textContent = aiMicLang==="zh-CN" ? "中" : "EN"; };
 aiMsgs.onclick=e=>{ const b=e.target.closest("[data-spk]"); if(b) speak(decodeURIComponent(b.dataset.spk)); };
 
 // 设置
