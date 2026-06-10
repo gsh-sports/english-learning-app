@@ -456,6 +456,17 @@
           <button id="voiceTry" class="trybtn">🔊</button>
         </div>
       </div>
+      <div class="row" style="display:block">
+        <span>AI 陪练密钥（在线版）<br><small style="color:var(--sub);font-weight:400">填你自己的 Claude API Key，仅存在本机浏览器，用谁的key花谁的额度。<a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--primary)">获取密钥</a></small></span>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <input id="apiKeyInput" type="password" placeholder="sk-ant-..." style="flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;outline:none">
+          <select id="aiModelSel" class="vsel">
+            <option value="claude-haiku-4-5">Haiku·便宜</option>
+            <option value="claude-sonnet-4-6">Sonnet</option>
+            <option value="claude-opus-4-8">Opus·最强</option>
+          </select>
+        </div>
+      </div>
       <div class="row">
         <span>每日学习提醒<br><small style="color:var(--sub);font-weight:400">网页版仅在打开时提醒，装成桌面图标更稳</small></span>
         <button id="remindToggle" class="toggle">关</button>
@@ -832,6 +843,34 @@ function walleTalk(text){
   const dur=Math.max(1500, speakable(text).length*70);
   walleTimer=setTimeout(()=>walleSet("","聊得不错，继续吧 😊"), dur);
 }
+const AI_SYSTEM = "You are a warm, friendly English conversation tutor for a Chinese ABSOLUTE BEGINNER (A1 level). Rules: Reply ONLY in very simple English, short sentences (under 12 words). If the student's English has a mistake, add ONE short correction line starting with 💡. Always keep the conversation going: end with a simple question. After your English reply, add a Simplified Chinese translation in parentheses. Do not use tools. Be encouraging.";
+// 直接调用 Anthropic API（BYOK：用访客自己的密钥，浏览器直连）
+async function callAnthropic(history){
+  const msgs=[];
+  for(const m of history){                  // 首条不能是 assistant，过滤开头的问候
+    const role=m.role==="user"?"user":"assistant";
+    if(msgs.length===0 && role==="assistant") continue;
+    msgs.push({role, content:m.text});
+  }
+  const r=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{
+      "content-type":"application/json",
+      "x-api-key":settings.apiKey,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true"
+    },
+    body:JSON.stringify({
+      model:settings.aiModel||"claude-haiku-4-5",
+      max_tokens:600,
+      system:AI_SYSTEM,
+      messages:msgs
+    })
+  });
+  if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error((e.error&&e.error.message)||("HTTP "+r.status)); }
+  const d=await r.json();
+  return (d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim();
+}
 function speakable(t){
   let s=t.split("💡")[0];                               // 去掉纠错及之后
   s=s.replace(/（[^）]*）/g,"").replace(/\([^)]*\)/g,""); // 去掉中文括号
@@ -873,15 +912,24 @@ async function sendAi(){
   const typing=document.createElement("div"); typing.className="amsg ai typing"; typing.textContent="对方正在输入…";
   aiMsgs.appendChild(typing); aiMsgs.scrollTop=aiMsgs.scrollHeight;
   try{
-    const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:aiHistory})});
-    const d=await r.json();
+    let reply;
+    if(settings.apiKey){                       // 有自己的密钥 → 浏览器直连（在线可用）
+      reply=await callAnthropic(aiHistory);
+    }else{                                       // 否则回退到本地 server.py
+      const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:aiHistory})});
+      if(!r.ok) throw new Error("no-backend");
+      reply=(await r.json()).reply;
+    }
     typing.remove();
-    addAiMsg("ai", d.reply, true);
-    walleTalk(d.reply);
+    addAiMsg("ai", reply, true);
+    walleTalk(reply);
   }catch(e){
     typing.remove();
-    addAiMsg("ai","连接失败，请确认电脑上的 server.py 在运行。(Connection failed.)", false);
-    walleSet("","连接失败了 😢");
+    const hint = settings.apiKey
+      ? ("出错了："+(e.message||e)+"（检查密钥是否正确/有额度）")
+      : "在线使用请到 设置 → 填入你自己的 Claude API 密钥；或在本机运行 server.py。";
+    addAiMsg("ai", hint, false);
+    walleSet("","出错了 😢");
   }
   aiBusy=false;
 }
@@ -943,7 +991,13 @@ aiMic.onclick=aiMicToggle;
 aiMsgs.onclick=e=>{ const b=e.target.closest("[data-spk]"); if(b) speak(decodeURIComponent(b.dataset.spk)); };
 
 // 设置
-openSettings.onclick=()=>sheet.classList.add("active");
+openSettings.onclick=()=>{
+  apiKeyInput.value=settings.apiKey||"";
+  aiModelSel.value=settings.aiModel||"claude-haiku-4-5";
+  sheet.classList.add("active");
+};
+apiKeyInput.oninput=()=>{ settings.apiKey=apiKeyInput.value.trim(); saveAll(); };
+aiModelSel.onchange=()=>{ settings.aiModel=aiModelSel.value; saveAll(); };
 closeSheet.onclick=()=>{ sheet.classList.remove("active"); refreshHome(); };
 sheet.onclick=e=>{ if(e.target===sheet) sheet.classList.remove("active"); };
 plus.onclick=()=>{ settings.perDay=Math.min(50,settings.perDay+5); saveAll(); perDay.textContent=settings.perDay; };

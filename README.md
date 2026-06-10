@@ -20,7 +20,7 @@
 ## 🚀 在线体验（单词 + 语法）
 
 > 在线版可直接使用**单词、语法、打卡**等纯前端功能。
-> ⚠️ **AI 陪练**需要本地后端（见下节），在线版不可用。
+> **AI 陪练**在线也能用：在 **设置** 里填入你自己的 [Claude API Key](https://console.anthropic.com/settings/keys)（BYOK，仅存在你本机浏览器，用谁的 key 花谁的额度，默认用便宜的 Haiku 模型）。不想用 key 的话，也可在本机运行 `server.py` 走本地 Claude。
 
 👉 **在线地址：** https://gsh-sports.github.io/english-learning-app/
 
