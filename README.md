@@ -22,15 +22,15 @@
 > 在线版可直接使用**单词、语法、打卡**等纯前端功能。
 > ⚠️ **AI 陪练**需要本地后端（见下节），在线版不可用。
 
-👉 **在线地址：** `https://<用户名>.github.io/<仓库名>/`（部署后填入）
+👉 **在线地址：** https://gsh-sports.github.io/english-learning-app/
 
 ## 💻 本地完整运行（含 AI 陪练）
 
 AI 陪练通过本地 [Claude Code](https://claude.com/claude-code) 的无头模式（`claude -p`）实现——**无需 API 密钥**，用你本机已登录的 Claude。
 
 ```bash
-git clone https://github.com/<用户名>/<仓库名>.git
-cd <仓库名>
+git clone https://github.com/gsh-sports/english-learning-app.git
+cd english-learning-app
 python3 server.py          # 启动本地后端（默认 8000 端口）
 # 浏览器打开 http://localhost:8000
 ```
