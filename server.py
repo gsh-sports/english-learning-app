@@ -43,6 +43,9 @@ def build_messages(history):
         msgs.append({"role": role, "content": m.get("text", "")})
     return msgs
 
+# 本地 Claude 用 Haiku + 跳过 MCP/额外设置 来降低启动延迟（约 6s → 3.5s）
+CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "claude-haiku-4-5")
+
 def ask_claude(history):
     lines = [SYSTEM, "", "Conversation so far:"]
     for m in history[-12:]:
@@ -50,8 +53,10 @@ def ask_claude(history):
         lines.append(f"{who}: {m.get('text','')}")
     lines.append("Tutor:")
     try:
-        r = subprocess.run(["claude", "-p", "\n".join(lines)],
-                           capture_output=True, text=True, timeout=90, cwd=CHAT_CWD)
+        r = subprocess.run(
+            ["claude", "-p", "--model", CLAUDE_MODEL,
+             "--strict-mcp-config", "--setting-sources", "", "\n".join(lines)],
+            capture_output=True, text=True, timeout=90, cwd=CHAT_CWD)
         return (r.stdout or "").strip() or "Let's try again! (我们再试一次吧！)"
     except subprocess.TimeoutExpired:
         return "Hmm, I need more time. Please ask again. (我需要点时间，请再问一次。)"
