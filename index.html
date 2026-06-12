@@ -211,6 +211,8 @@
   .aiinput input{flex:1 1 0;min-width:0;border:1px solid var(--line);border-radius:20px;padding:11px 14px;font-size:15px;outline:none;background:#fff}
   .aimic{width:40px;height:40px;border:none;border-radius:50%;background:#eef0fc;color:var(--primary);font-size:17px;cursor:pointer;flex:0 0 auto}
   .aimic.listening{background:var(--red);color:#fff;animation:pulse 1s infinite}
+  .micbtn2{height:40px;padding:0 9px;border:none;border-radius:12px;background:#eef0fc;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;flex:0 0 auto;white-space:nowrap}
+  .micbtn2.listening{background:var(--red);color:#fff;animation:pulse 1s infinite}
   @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
   .aisend{border:none;border-radius:20px;padding:11px 16px;background:var(--primary);color:#fff;font-weight:600;cursor:pointer;flex:0 0 auto;white-space:nowrap}
 
@@ -349,8 +351,9 @@
     </div>
     <div id="aiMsgs" class="aimsgs"></div>
     <div class="aiinput">
-      <button id="aiMic" class="aimic" aria-label="语音输入">🎤</button>
-      <input id="aiText" placeholder="打字或点麦克风（中/英都行）…">
+      <button id="micZh" class="micbtn2" title="说中文">🎤中</button>
+      <button id="micEn" class="micbtn2" title="Speak English">🎤EN</button>
+      <input id="aiText" placeholder="打字，或点 🎤中 / 🎤EN 说话">
       <button id="aiSend" class="aisend">发送</button>
     </div>
   </section>
@@ -1042,14 +1045,16 @@ async function sendAi(){
   }
   aiBusy=false;
 }
-function aiMicToggle(){
+function aiMicStart(lang, btn){
   if(!AI_SR){ alert("此浏览器不支持语音输入。请打字；语音输入需 Chrome/Safari 且用电脑(localhost)或 https。"); return; }
-  if(aiMic.classList.contains("listening")){ try{aiRecog.stop();}catch(e){} return; }
-  aiRecog=new AI_SR(); aiRecog.lang=navigator.language||"zh-CN"; aiRecog.interimResults=false; aiRecog.maxAlternatives=1;
-  aiMic.classList.add("listening"); walleSet("listening","我在听你说…（中英文都行）🎧");
+  if(btn.classList.contains("listening")){ try{aiRecog.stop();}catch(e){} return; }
+  [micZh, micEn].forEach(b=>b.classList.remove("listening"));   // 互斥
+  aiRecog=new AI_SR(); aiRecog.lang=lang; aiRecog.interimResults=false; aiRecog.maxAlternatives=1;
+  btn.classList.add("listening");
+  walleSet("listening", lang==="zh-CN" ? "我在听你说中文… 🎧" : "I'm listening (English)… 🎧");
   aiRecog.onresult=e=>{ aiText.value=e.results[0][0].transcript; };
-  aiRecog.onend=()=>{ aiMic.classList.remove("listening"); if(aiText.value.trim()) sendAi(); else walleSet("","按住麦克风说说看 🎤"); };
-  aiRecog.onerror=()=>{ aiMic.classList.remove("listening"); walleSet("","没听清，再试一次"); };
+  aiRecog.onend=()=>{ btn.classList.remove("listening"); if(aiText.value.trim()) sendAi(); else walleSet("","点 🎤中 或 🎤EN 说话"); };
+  aiRecog.onerror=()=>{ btn.classList.remove("listening"); walleSet("","没听清，再试一次"); };
   try{ aiRecog.start(); }catch(e){}
 }
 
@@ -1096,7 +1101,8 @@ openAiChat.onclick=openAiChatScreen;
 aiBack.onclick=()=>showTab("usage");
 aiSend.onclick=sendAi;
 aiText.addEventListener("keydown",e=>{ if(e.key==="Enter") sendAi(); });
-aiMic.onclick=aiMicToggle;
+micZh.onclick=()=>aiMicStart("zh-CN", micZh);
+micEn.onclick=()=>aiMicStart("en-US", micEn);
 aiMsgs.onclick=e=>{ const b=e.target.closest("[data-spk]"); if(b) speak(decodeURIComponent(b.dataset.spk)); };
 
 // 设置
